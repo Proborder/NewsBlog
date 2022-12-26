@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ category.name }} - Новости ПрессРу
+{% endblock title %}
+
+{% block sidebar %}
+    <div class="col-3">
+        <div class="list-group">
+            <a href="{% url 'index' %}" class="list-group-item list-group-item-action">Все категории</a>
+            {% for category in categories %}
+                <a href="{{ category.get_absolute_url }}" class="list-group-item list-group-item-action">{{ category.name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock sidebar %}
+
+{% block content %}
+    <div class="col-9">
+        <div class="card">
+            <h5 class="card-header">Категория: {{ post.category }}</h5>
+            <div class="card-body">
+                <h5 class="card-title"> {{ post.title }}</h5>
+                <p class="card-text">{{ post.content }}</p>
+            </div>
+            <div class="card-footer text-muted">
+                {{ post.created_at|date:"Y-m-d H:i:s" }}
+            </div>
+        </div>
+        <br>
+    </div>
+{% endblock content %}
