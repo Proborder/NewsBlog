@@ -1,0 +1,18 @@
+{% extends 'news_app/base.html' %}
+
+{% block title %}
+    ПрессРу: Регистрация
+{% endblock title %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {% for f in form %}
+            <div class="form-group">
+                <label for={{ f.id_for_label }}>{{ f.label }}</label>
+                {{ f }}
+                <div class="form-error">{{ f.errors }}</div>
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+{% endblock content %}
