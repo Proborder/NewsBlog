@@ -26,7 +26,7 @@
                 <div class="card">
                     <h5 class="card-header">Категория: {{ post.category }}</h5>
                     <div class="card-body">
-                        <h5 class="card-title"> {{ post.title }}</h5>
+                        <h5 class="card-title">{{ post.title }}</h5>
                         <p class="card-text">{{ post.content|truncatechars:300 }}</p>
                         <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Читать далее</a>
                     </div>
@@ -39,5 +39,6 @@
         {% else %}
             <h1>Нет постов в этой категории</h1>
         {% endif %}
+        {% include 'news_app/pagination.html' %}
     </div>
 {% endblock content %}

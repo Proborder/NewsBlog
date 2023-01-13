@@ -1,17 +1,19 @@
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic.edit import ModelFormMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, logout
 
-from .models import Category, News
-from .forms import NewsForm, RegisterUserForm, LoginUserForm
+from .models import Category, News, Comment
+from .forms import CommentForm, NewsForm, RegisterUserForm, LoginUserForm
 
 
 class NewsHome(ListView):
     model = News
     template_name = 'news_app/index.html'
     context_object_name = 'news'
+    paginate_by = 4
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -26,6 +28,7 @@ class NewsCategory(ListView):
     model = News
     template_name = 'news_app/show_category.html'
     context_object_name = 'news'
+    paginate_by = 4
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -38,16 +41,31 @@ class NewsCategory(ListView):
         return News.objects.filter(category__slug=self.kwargs['categories_name'], is_published=True)
 
 
-class ShowPost(DetailView):
+class ShowPost(ModelFormMixin, DetailView):
     model = News
+    form_class = CommentForm
     template_name = 'news_app/show_post.html'
     context_object_name = 'post'
     slug_url_kwarg = 'post_name'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['category'] = Category.objects.get(news__slug=self.kwargs['post_name'])
         context['categories'] = Category.objects.all()
+        context['comments'] = Comment.objects.filter(news__slug=self.kwargs['post_name'])
+        context['form'] = CommentForm(initial={'username': self.request.user, 'news': self.object})
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        self.object = self.get_object()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('post', kwargs={'post_name': self.kwargs['post_name']})
 
 
 class NewsCreateView(CreateView):
@@ -90,4 +108,4 @@ class LoginUser(LoginView):
 
 def logout_user(request):
     logout(request)
-    return redirect('login')
+    return redirect('index')
