@@ -21,7 +21,7 @@ class NewsHome(ListView):
         return context
 
     def get_queryset(self):
-        return News.objects.filter(is_published=True)
+        return News.objects.filter(is_published=True).select_related('category')
 
 
 class NewsCategory(ListView):
@@ -38,7 +38,7 @@ class NewsCategory(ListView):
         return context
 
     def get_queryset(self):
-        return News.objects.filter(category__slug=self.kwargs['categories_name'], is_published=True)
+        return News.objects.filter(category__slug=self.kwargs['categories_name'], is_published=True).select_related('category')
 
 
 class ShowPost(ModelFormMixin, DetailView):
@@ -52,7 +52,7 @@ class ShowPost(ModelFormMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.get(news__slug=self.kwargs['post_name'])
         context['categories'] = Category.objects.all()
-        context['comments'] = Comment.objects.filter(news__slug=self.kwargs['post_name'])
+        context['comments'] = Comment.objects.filter(news__slug=self.kwargs['post_name']).select_related('username')
         context['form'] = CommentForm(initial={'username': self.request.user, 'news': self.object})
         return context
 
