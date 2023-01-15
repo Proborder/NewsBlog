@@ -1,4 +1,5 @@
 {% load static %}
+{% load news_app_tags %}
 
 <!doctype html>
 <html lang="en">
@@ -21,8 +22,11 @@
     <div class="container mt-3">
         <div class="row">
 
-            {% block sidebar %}{% endblock %}
-            {% block content %}{% endblock %}
+            {% show_categories cat_selected %}
+            <div class="col-9">
+                {% block content %}{% endblock %}
+                {% include 'news_app/pagination.html' %}
+            </div>
 
         </div>
     </div>
