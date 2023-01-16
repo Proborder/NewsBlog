@@ -5,18 +5,22 @@
 {% endblock title %}
 
 {% block content %}
-    {% for post in news %}
-        <div class="card">
-            <h5 class="card-header">Категория: {{ post.category }}</h5>
-            <div class="card-body">
-                <h5 class="card-title"> {{ post.title }}</h5>
-                <p class="card-text">{{ post.content|truncatechars:300 }}</p>
-                <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Читать далее</a>
+    {% if news|length != 0 %}
+        {% for post in news %}
+            <div class="card">
+                <h5 class="card-header">Категория: {{ post.category }}</h5>
+                <div class="card-body">
+                    <h5 class="card-title"> {{ post.title }}</h5>
+                    <p class="card-text">{{ post.content|truncatechars:300 }}</p>
+                    <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Читать далее</a>
+                </div>
+                <div class="card-footer text-muted">
+                    {{ post.created_at|date:"Y-m-d H:i:s" }}
+                </div>
             </div>
-            <div class="card-footer text-muted">
-                {{ post.created_at|date:"Y-m-d H:i:s" }}
-            </div>
-        </div>
-        <br>
-    {% endfor %}
+            <br>
+        {% endfor %}
+    {% else %}
+        <h1>Нет новостей по вашему запросу</h1>
+    {% endif %}
 {% endblock content %}

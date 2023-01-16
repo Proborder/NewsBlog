@@ -33,7 +33,6 @@ class NewsCategory(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.get(slug=self.kwargs['categories_name'])
-        context['categories'] = Category.objects.all()
         context['cat_selected'] = self.kwargs['categories_name']
         return context
 
@@ -51,7 +50,6 @@ class ShowPost(ModelFormMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.get(news__slug=self.kwargs['post_name'])
-        context['categories'] = Category.objects.all()
         context['comments'] = Comment.objects.filter(news__slug=self.kwargs['post_name']).select_related('username')
         context['form'] = CommentForm(initial={'username': self.request.user, 'news': self.object})
         return context
@@ -68,6 +66,22 @@ class ShowPost(ModelFormMixin, DetailView):
         return reverse('post', kwargs={'post_name': self.kwargs['post_name']})
 
 
+class NewsSearch(ListView):
+    model = News
+    template_name = 'news_app/index.html'
+    context_object_name = 'news'
+    paginate_by = 4
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cat_selected'] = 0
+        return context
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        return News.objects.filter(title__icontains=query, is_published=True).select_related('category')
+
+
 class NewsCreateView(CreateView):
     form_class = NewsForm
     template_name = "news_app/create_post.html"
@@ -75,7 +89,6 @@ class NewsCreateView(CreateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['categories'] = Category.objects.all()
         return context
 
 

@@ -8,8 +8,8 @@
             <a class="nav-item nav-link" href="#">О сайте</a>
             <a class="nav-item nav-link" href="{% url 'create-post' %}">Добавить статью</a>
             <div style="position: absolute; right: 0; padding-right: 175px">
-                <form class="form-inline">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <form class="form-inline" action={% url 'news-search' %} method="get">
+                    <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                 </form>
             </div>
