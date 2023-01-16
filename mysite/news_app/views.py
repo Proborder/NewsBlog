@@ -7,34 +7,33 @@ from django.contrib.auth import login, logout
 
 from .models import Category, News, Comment
 from .forms import CommentForm, NewsForm, RegisterUserForm, LoginUserForm
+from .utils import DataMixin
 
 
-class NewsHome(ListView):
+class NewsHome(DataMixin, ListView):
     model = News
     template_name = 'news_app/index.html'
     context_object_name = 'news'
-    paginate_by = 4
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['cat_selected'] = 0
-        return context
+        c_def = self.get_user_context()
+        return context | c_def
 
     def get_queryset(self):
         return News.objects.filter(is_published=True).select_related('category')
 
 
-class NewsCategory(ListView):
+class NewsCategory(DataMixin, ListView):
     model = News
     template_name = 'news_app/show_category.html'
     context_object_name = 'news'
-    paginate_by = 4
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.get(slug=self.kwargs['categories_name'])
-        context['cat_selected'] = self.kwargs['categories_name']
-        return context
+        c_def = self.get_user_context(cat_selected=self.kwargs['categories_name'])
+        return context | c_def
 
     def get_queryset(self):
         return News.objects.filter(category__slug=self.kwargs['categories_name'], is_published=True).select_related('category')
@@ -66,16 +65,15 @@ class ShowPost(ModelFormMixin, DetailView):
         return reverse('post', kwargs={'post_name': self.kwargs['post_name']})
 
 
-class NewsSearch(ListView):
+class NewsSearch(DataMixin, ListView):
     model = News
     template_name = 'news_app/index.html'
     context_object_name = 'news'
-    paginate_by = 4
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['cat_selected'] = 0
-        return context
+        c_def = self.get_user_context()
+        return context | c_def
 
     def get_queryset(self):
         query = self.request.GET.get('q')
