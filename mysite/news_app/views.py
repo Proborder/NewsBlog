@@ -1,7 +1,8 @@
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import redirect
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.generic.edit import ModelFormMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login, logout
 
@@ -10,7 +11,7 @@ from .forms import CommentForm, NewsForm, RegisterUserForm, LoginUserForm
 from .utils import DataMixin
 
 
-class NewsHome(DataMixin, ListView):
+class NewsHomeView(DataMixin, ListView):
     model = News
     template_name = 'news_app/index.html'
     context_object_name = 'news'
@@ -24,7 +25,7 @@ class NewsHome(DataMixin, ListView):
         return News.objects.filter(is_published=True).select_related('category')
 
 
-class NewsCategory(DataMixin, ListView):
+class NewsCategoryView(DataMixin, ListView):
     model = News
     template_name = 'news_app/show_category.html'
     context_object_name = 'news'
@@ -39,7 +40,7 @@ class NewsCategory(DataMixin, ListView):
         return News.objects.filter(category__slug=self.kwargs['categories_name'], is_published=True).select_related('category')
 
 
-class ShowPost(ModelFormMixin, DetailView):
+class ShowPostView(ModelFormMixin, DetailView):
     model = News
     form_class = CommentForm
     template_name = 'news_app/show_post.html'
@@ -65,7 +66,7 @@ class ShowPost(ModelFormMixin, DetailView):
         return reverse('post', kwargs={'post_name': self.kwargs['post_name']})
 
 
-class NewsSearch(DataMixin, ListView):
+class NewsSearchView(DataMixin, ListView):
     model = News
     template_name = 'news_app/index.html'
     context_object_name = 'news'
@@ -80,9 +81,25 @@ class NewsSearch(DataMixin, ListView):
         return News.objects.filter(title__icontains=query, is_published=True).select_related('category')
 
 
-class NewsCreateView(CreateView):
+class NewsUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'news_app.change_post'
+    model = News
+    template_name = 'news_app/create_post.html'
+    slug_url_kwarg = 'post_name'
     form_class = NewsForm
-    template_name = "news_app/create_post.html"
+
+
+class NewsDeleteView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'news_app.delete_post'
+    model = News
+    slug_url_kwarg = 'post_name'
+    success_url = reverse_lazy('index')
+
+
+class NewsCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = 'news_app.add_news'
+    form_class = NewsForm
+    template_name = 'news_app/create_post.html'
     success_url = reverse_lazy('index')
     
     def get_context_data(self, **kwargs):
@@ -90,7 +107,7 @@ class NewsCreateView(CreateView):
         return context
 
 
-class RegisterUser(CreateView):
+class RegisterUserView(CreateView):
     form_class = RegisterUserForm
     template_name = 'news_app/register.html'
     success_url = reverse_lazy('login')
@@ -105,7 +122,7 @@ class RegisterUser(CreateView):
         return redirect('index')
 
 
-class LoginUser(LoginView):
+class LoginUserView(LoginView):
     form_class = LoginUserForm
     template_name = 'news_app/login.html'
 

@@ -1,0 +1,19 @@
+{% if request.user.is_authenticated %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="input-group">
+            {% for f in form.visible_fields %}
+                <div class="form-group">
+                    <h4><label for={{ f.id_for_label }}>{{ f.label }}</label></h4>
+                    {{ f }}
+                </div>
+            {% endfor %}
+            {% for field in form.hidden_fields %}
+                {{ field }}
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    <br>
+{% else %}
+    <h4>Авторизуйтесь для написания комментария</h4>
+{% endif %}
