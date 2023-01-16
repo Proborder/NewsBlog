@@ -17,7 +17,7 @@
 
 <body>
 
-    {% include 'news_app/inc/_nav.html' %}
+    {% include 'news_app/inc/nav.html' %}
 
     <div class="container mt-3">
         <div class="row">
@@ -25,7 +25,7 @@
             {% show_categories cat_selected %}
             <div class="col-9">
                 {% block content %}{% endblock %}
-                {% include 'news_app/pagination.html' %}
+                {% include 'news_app/inc/pagination.html' %}
             </div>
 
         </div>
