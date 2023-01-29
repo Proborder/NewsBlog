@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.core import validators
 
 
-# Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length=30, db_index=True, verbose_name='Категория')
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='URL')
@@ -20,8 +20,8 @@ class Category(models.Model):
 
 
 class News(models.Model):
-    title = models.CharField(max_length=120, verbose_name='Заголовок')
-    content = models.TextField(verbose_name='Контент')
+    title = models.CharField(max_length=120,verbose_name='Заголовок', validators=[validators.MinLengthValidator(12)])
+    content = models.TextField(verbose_name='Контент', validators=[validators.MinLengthValidator(25)])
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
     photo = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True, verbose_name='Фото')
@@ -44,7 +44,7 @@ class News(models.Model):
 class Comment(models.Model):
     news = models.ForeignKey('News', on_delete=models.CASCADE, verbose_name='Новость')
     username = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Имя пользователя')
-    content = models.CharField(max_length=255, verbose_name='Текст комментария')
+    content = models.TextField(max_length=255, verbose_name='Текст комментария')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
     class Meta:
