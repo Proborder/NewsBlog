@@ -24,8 +24,8 @@ class NewsForm(forms.ModelForm):
 
 
 class RegisterUserForm(UserCreationForm):
-    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    email = forms.CharField(label='Email', widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Login'}))
+    email = forms.CharField(label='Email', widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
     password2 = forms.CharField(label='Повтор паооля', widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
 
@@ -45,7 +45,7 @@ class CommentForm(forms.ModelForm):
         self.fields['content'].label = 'Написать комментарий'
         self.fields['news'].widget = HiddenInput()
         self.fields['username'].widget = HiddenInput()
-        
+
     class Meta:
         model = Comment
         fields = ['username', 'content', 'news']

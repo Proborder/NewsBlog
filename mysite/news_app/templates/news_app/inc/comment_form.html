@@ -6,6 +6,7 @@
                 <div class="form-group">
                     <h4><label for={{ f.id_for_label }}>{{ f.label }}</label></h4>
                     {{ f }}
+                    <div class="form-error">{{ f.errors }}</div>
                 </div>
             {% endfor %}
             {% for field in form.hidden_fields %}
