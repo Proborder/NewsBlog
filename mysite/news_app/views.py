@@ -49,7 +49,6 @@ class ShowPostView(ModelFormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['category'] = Category.objects.get(news__slug=self.kwargs['post_name'])
         context['comments'] = Comment.objects.filter(news__slug=self.kwargs['post_name']).select_related('username')
         context['form'] = CommentForm(initial={'username': self.request.user, 'news': self.object})
         return context
@@ -64,7 +63,7 @@ class ShowPostView(ModelFormMixin, DetailView):
 
     def get_success_url(self):
         return reverse('post', kwargs={'post_name': self.kwargs['post_name']})
-
+        
 
 class NewsSearchView(DataMixin, ListView):
     model = News
@@ -101,20 +100,12 @@ class NewsCreateView(PermissionRequiredMixin, CreateView):
     form_class = NewsForm
     template_name = 'news_app/create_post.html'
     success_url = reverse_lazy('index')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
 
 
 class RegisterUserView(CreateView):
     form_class = RegisterUserForm
     template_name = 'news_app/register.html'
     success_url = reverse_lazy('login')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
 
     def form_valid(self, form):
         user = form.save()
@@ -125,10 +116,7 @@ class RegisterUserView(CreateView):
 class LoginUserView(LoginView):
     form_class = LoginUserForm
     template_name = 'news_app/login.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
+    redirect_authenticated_user = True
 
     def get_success_url(self):
         return reverse_lazy('index')
