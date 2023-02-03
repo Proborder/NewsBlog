@@ -10,5 +10,5 @@ def show_categories(cat_selected=None):
     cats = Category.objects.all()
     return {
         'cats': cats,
-        'cat_selected': cat_selected
+        'cat_selected': cat_selected,
     }

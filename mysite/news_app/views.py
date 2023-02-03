@@ -63,7 +63,7 @@ class ShowPostView(ModelFormMixin, DetailView):
 
     def get_success_url(self):
         return reverse('post', kwargs={'post_name': self.kwargs['post_name']})
-        
+
 
 class NewsSearchView(DataMixin, ListView):
     model = News
